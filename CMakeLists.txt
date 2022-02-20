@@ -8,4 +8,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(JNI REQUIRED)
 
 enable_testing()
-add_subdirectory(test)
+add_subdirectory(test/data_types)
+add_subdirectory(test/methods)

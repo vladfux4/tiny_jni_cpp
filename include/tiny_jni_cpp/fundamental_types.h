@@ -67,7 +67,7 @@ struct ConstructorDelegate<tiny_jni_cpp::fundamental_types::Integer>
 
   jobject Apply(const Type& value)  // call default ctr for default case
   {
-    return Base::CallConstructor("(I)V", value.value);
+    return Base::CallConstructor(value.value);
   }
 };
 

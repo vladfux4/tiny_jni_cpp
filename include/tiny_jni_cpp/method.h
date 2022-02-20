@@ -23,11 +23,29 @@
 
 #pragma once
 
-#include "tiny_jni_cpp/container_helpers.h"
+#include <jni.h>
+
 #include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
 #include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+
+namespace tiny_jni_cpp {
+
+template <typename ReturnType>
+struct Method {
+  template <typename... Args>
+  static auto call(JNIEnv* env, jobject obj, const char* name, Args... args) {
+    auto result_obj =
+        object_traits::Caller<ReturnType>::call(env, obj, name, args...);
+    return Converter<ReturnType>::Convert(env, result_obj);
+  }
+};
+
+template <>
+struct Method<void> {
+  template <typename... Args>
+  static void call(JNIEnv* env, jobject obj, const char* name, Args... args) {
+    object_traits::Caller<void>::call(env, obj, name, args...);
+  }
+};
+
+}  // namespace tiny_jni_cpp

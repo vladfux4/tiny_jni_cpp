@@ -39,7 +39,7 @@ struct ConstructorDelegate : tiny_jni_cpp::ConstructorDelegateBase<Type> {
 
   jobject Apply(const Type& /*value*/)  // call default ctr for default case
   {
-    return Base::CallConstructor("()V");
+    return Base::CallConstructor();
   }
 };
 

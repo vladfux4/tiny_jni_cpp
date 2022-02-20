@@ -27,23 +27,33 @@
 
 #include <string>
 
+#include "tiny_jni_cpp/object_traits/caller.h"
+
 template <typename Delegate, typename Type>
 struct TypeDescriptor;
 
 namespace tiny_jni_cpp {
 
 template <typename Type>
+struct Builder;
+
+template <typename Type>
 struct ConstructorDelegateBase {
   ConstructorDelegateBase(JNIEnv* env) : env_(env) {}
 
   template <typename... Args>
-  jobject CallConstructor(const char* signature, Args... args) {
+  jobject CallConstructor(Args... args) {
     struct Delegate;
     using Descriptor = TypeDescriptor<Delegate, Type>;
 
     jclass jni_class = env_->FindClass(Descriptor::java_type_id);
-    jmethodID method_id = env_->GetMethodID(jni_class, "<init>", signature);
-    return env_->NewObject(jni_class, method_id, args...);
+    std::string signature =
+        object_traits::internal::MethodSignature<void>::Make(args...);
+
+    jmethodID method_id =
+        env_->GetMethodID(jni_class, "<init>", signature.c_str());
+    return env_->NewObject(jni_class, method_id,
+                           Builder<Args>::Build(env_, args)...);
   }
 
  private:

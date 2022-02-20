@@ -257,4 +257,30 @@ Java_TestDataTypesJNI_getOtherStruct(JNIEnv* env, jobject /*self*/) {
 
   return Builder<example::OtherStruct>::Build(env, otherStruct);
 }
+
+using tiny_jni_cpp::Method;
+
+/*
+ * Class:     TestDataTypesJNI
+ * Method:    runMethodCalls
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_TestDataTypesJNI_runMethodCalls(JNIEnv* env,
+                                                            jobject self) {
+  Method<void>::call(env, self, "intMethod", int(1));
+  Method<void>::call(env, self, "intLongMethod", int(1), long(2));
+  Method<void>::call(env, self, "intListMethod",
+                     std::vector<int>({1, 2, 3, 4, 5}));
+
+  auto int_list = Method<std::vector<int>>::call(
+      env, self, "structListIntListMethod",
+      std::vector<example::ExampleStruct>({{1, 2}, {3, 4}}));
+  for (const auto& item : int_list) {
+    std::cout << "intList item: " << item << std::endl;
+  }
+
+  auto string = Method<std::string>::call(env, self, "stringMethod",
+                                          std::string("Hello from C++"));
+  std::cout << "Result: " << string << std::endl;
+}
 }
