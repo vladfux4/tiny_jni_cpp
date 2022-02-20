@@ -46,9 +46,9 @@ class OtherStruct {
 
 
 class TestDataTypesJNI {
-   static {
-      System.load(System.getenv("JNI_SO_PATH"));
-   }
+    TestDataTypesJNI(String nativeLibPath) {
+        System.load(nativeLibPath);
+    }
 
     native void testInt(int value);
     native void testLong(long value);
@@ -103,7 +103,7 @@ class TestDataTypesJNI {
 public class TestDataTypes {
 
     public static void main(String[] args) {
-        TestDataTypesJNI obj = new TestDataTypesJNI();
+        TestDataTypesJNI obj = new TestDataTypesJNI(args[0]);
 
         obj.testInt(0xFF);
         obj.testLong(0xABC);

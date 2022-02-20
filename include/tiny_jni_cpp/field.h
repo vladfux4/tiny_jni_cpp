@@ -23,14 +23,27 @@
 
 #pragma once
 
-#include "tiny_jni_cpp/container_helpers.h"
+#include <jni.h>
+
+#include "tiny_jni_cpp/builder.h"
 #include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/field.h"
-#include "tiny_jni_cpp/field_context.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
 #include "tiny_jni_cpp/object_traits/getter.h"
 #include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+
+namespace tiny_jni_cpp {
+
+template <typename Type>
+struct Field {
+  static void Set(JNIEnv* env, jobject obj, const char* name,
+                  const Type& value) {
+    auto jni_value = Builder<Type>::Build(env, value);
+    object_traits::Setter<Type>::Set(env, obj, name, jni_value);
+  }
+
+  static auto Get(JNIEnv* env, jobject obj, const char* name) {
+    auto jni_value = object_traits::Getter<Type>::Get(env, obj, name);
+    return Converter<Type>::Convert(env, jni_value);
+  }
+};
+
+}  // namespace tiny_jni_cpp

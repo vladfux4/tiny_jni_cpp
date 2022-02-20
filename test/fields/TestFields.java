@@ -39,51 +39,23 @@ class ExampleStruct {
   public long longValue;
 }
 
-class TestMethodsJNI {
-    TestMethodsJNI(String nativeLibPath) {
+class TestFieldsJNI {
+    TestFieldsJNI(String nativeLibPath) {
         System.load(nativeLibPath);
     }
 
-    native void runMethodCalls();
+    public int intField;
+    public ExampleStruct structField;
+    public ArrayList<Integer> intListField;
+    public String stringField;
 
-    void intMethod(int value) {
-        System.out.println("JAVA: intMethod: " + value);
-    }
-
-    void intLongMethod(int v0, long v1) {
-        System.out.println("JAVA: intLongMethod: " + v0 + " " + v1);
-    }
-
-    void intListMethod(ArrayList<Integer> intList) {
-        System.out.println("JAVA: intListMethod: " + intList.size());
-        for (Integer num : intList) {
-          System.out.println("Item: " + num);
-        }
-    }
-
-    ArrayList<Integer> structListIntListMethod(ArrayList<ExampleStruct> structList) {
-        System.out.println("JAVA: structListIntListMethod: " + structList.size());
-        for (ExampleStruct item : structList) {
-          System.out.println("Item: " + item.intValue + " " + item.longValue);
-        }
-
-        ArrayList<Integer> intList = new ArrayList<Integer>();
-        intList.add(3);
-        intList.add(4);
-
-        return intList;
-    }
-
-    String stringMethod(String value) {
-        System.out.println("JAVA: stringMethod: " + value);
-        return "Hello from JAVA";
-    }
+    native void runTest();
 }
 
-public class TestMethods {
+public class TestFields {
     public static void main(String[] args) {
-        TestMethodsJNI obj = new TestMethodsJNI(args[0]);
-        obj.runMethodCalls();
+        TestFieldsJNI obj = new TestFieldsJNI(args[0]);
+        obj.runTest();
 
         System.out.println("Done");
     }

@@ -9,5 +9,4 @@ add_custom_target(
     COMMAND javac ${JAVA_SRC} -d ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS ${JAVA_SRC} test_data_types_native)
 
-add_test(NAME DataTypes COMMAND java -cp ${CMAKE_CURRENT_BINARY_DIR} TestDataTypes)
-set_tests_properties(DataTypes PROPERTIES ENVIRONMENT "JNI_SO_PATH=${CMAKE_CURRENT_BINARY_DIR}/libtest_data_types_native.so")
+add_test(NAME DataTypes COMMAND java -cp ${CMAKE_CURRENT_BINARY_DIR} TestDataTypes ${CMAKE_CURRENT_BINARY_DIR}/libtest_data_types_native.so)
