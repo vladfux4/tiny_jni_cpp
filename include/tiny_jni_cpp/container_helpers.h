@@ -1,0 +1,83 @@
+/*
+ * MIT License
+ * Copyright (c) 2022 Vladyslav Samodelok
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+#pragma once
+
+#include <jni.h>
+
+#include <string>
+
+namespace tiny_jni_cpp {
+namespace container_helpers {
+namespace list {
+
+jobject BuildArrayList(JNIEnv* env) {
+  jclass jni_class = env->FindClass("Ljava/util/ArrayList;");
+  jmethodID method_id = env->GetMethodID(jni_class, "<init>", "()V");
+  return env->NewObject(jni_class, method_id);
+}
+
+bool Add(JNIEnv* env, jobject list, jobject item) {
+  jclass jni_class = env->GetObjectClass(list);
+  jmethodID method_id =
+      env->GetMethodID(jni_class, "add", "(Ljava/lang/Object;)Z");
+  return env->CallBooleanMethod(list, method_id, item);
+}
+
+jobjectArray ToArray(JNIEnv* env, jobject list) {
+  jclass jni_class = env->GetObjectClass(list);
+  jmethodID method_id =
+      env->GetMethodID(jni_class, "toArray", "()[Ljava/lang/Object;");
+  return static_cast<jobjectArray>(env->CallObjectMethod(list, method_id));
+}
+
+}  // namespace list
+
+namespace array {
+
+std::size_t Length(JNIEnv* env, jobjectArray array) {
+  return env->GetArrayLength(array);
+}
+
+jobject Get(JNIEnv* env, jobjectArray array, std::size_t index) {
+  return env->GetObjectArrayElement(array, index);
+}
+
+}  // namespace array
+
+namespace string {
+
+std::string Get(JNIEnv* env, jstring obj) {
+  const char* cstr = env->GetStringUTFChars(obj, nullptr);
+  auto result = std::string(cstr);
+  env->ReleaseStringUTFChars(obj, cstr);
+  return result;
+}
+
+jstring Build(JNIEnv* env, const std::string& value) {
+  return env->NewStringUTF(value.c_str());
+}
+
+}  // namespace string
+}  // namespace container_helpers
+}  // namespace tiny_jni_cpp
