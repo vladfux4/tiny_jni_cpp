@@ -23,15 +23,25 @@
 
 #pragma once
 
-#include "tiny_jni_cpp/attach_thread_guard.h"
-#include "tiny_jni_cpp/container_helpers.h"
-#include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/field.h"
-#include "tiny_jni_cpp/field_context.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+#include <jni.h>
+
+#include "tiny_jni_cpp/current_thread.h"
+
+namespace tiny_jni_cpp {
+
+struct AttachThreadGuard final {
+  AttachThreadGuard() { env_ = CurrentThread::Attach(); }
+  ~AttachThreadGuard() { CurrentThread::Detach(); }
+
+  AttachThreadGuard(const AttachThreadGuard& arg) = delete;
+  AttachThreadGuard(const AttachThreadGuard&& arg) = delete;
+  AttachThreadGuard& operator=(const AttachThreadGuard& arg) = delete;
+  AttachThreadGuard& operator=(const AttachThreadGuard&& arg) = delete;
+
+  JNIEnv* GetEnv() { return env_; }
+
+ private:
+  JNIEnv* env_ = nullptr;
+};
+
+}  // namespace tiny_jni_cpp

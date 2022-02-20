@@ -23,15 +23,44 @@
 
 #pragma once
 
-#include "tiny_jni_cpp/attach_thread_guard.h"
-#include "tiny_jni_cpp/container_helpers.h"
-#include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/field.h"
-#include "tiny_jni_cpp/field_context.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+#include <jni.h>
+
+#include <stdexcept>
+
+namespace tiny_jni_cpp {
+
+/**
+ *  Add next function in your native lib.
+ *
+ * jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+ *   tiny_jni_cpp::GlobalVM::Initialize(vm);
+ *   return tiny_jni_cpp::GlobalVM::kJniVersion;
+ * }
+ */
+class GlobalVM {
+ public:
+  static const jint kJniVersion = JNI_VERSION_1_6;
+
+  GlobalVM() = delete;
+
+  static void Initialize(JavaVM* vm) {
+    if (vm_ != nullptr) {
+      throw std::runtime_error("GlobalVM double initialization");
+    }
+
+    vm_ = vm;
+  }
+
+  static JavaVM* Get() {
+    if (vm_ == nullptr) {
+      throw std::runtime_error("Native lib is not loaded yet");
+    }
+
+    return vm_;
+  }
+
+ private:
+  static inline JavaVM* vm_ = nullptr;
+};
+
+}  // namespace tiny_jni_cpp

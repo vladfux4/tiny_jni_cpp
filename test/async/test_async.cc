@@ -21,17 +21,42 @@
  * SOFTWARE.
  */
 
-#pragma once
+#include <jni.h>
 
-#include "tiny_jni_cpp/attach_thread_guard.h"
-#include "tiny_jni_cpp/container_helpers.h"
-#include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/field.h"
-#include "tiny_jni_cpp/field_context.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+#include <iostream>
+#include <thread>
+
+#include "tiny_jni_cpp/tiny_jni_cpp.h"
+
+extern "C" {
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*reserved*/) {
+  std::cout << "JNI_OnLoad: " << vm << std::endl;
+  tiny_jni_cpp::GlobalVM::Initialize(vm);
+  return tiny_jni_cpp::GlobalVM::kJniVersion;
+}
+
+/*
+ * Class:     TestAsyncJNI
+ * Method:    runTest
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_TestAsyncJNI_runTest(JNIEnv* env, jobject self) {
+  jobject self_ref = env->NewGlobalRef(self);
+  std::thread async_call_thread([self_ref]() {
+    std::cout << "Start async thread" << std::endl;
+    tiny_jni_cpp::AttachThreadGuard guard;
+    std::cout << "Async thread is attached" << std::endl;
+
+    tiny_jni_cpp::MethodContext<std::string> stringMethod(
+        guard.GetEnv(), self_ref, "stringMethod");
+    std::cout << "Result: "
+              << stringMethod(std::string("Message from C++ async thread"))
+              << std::endl;
+    std::cout << "Finish Async thread" << std::endl;
+  });
+
+  async_call_thread.join();
+  std::cout << "C++ Done" << std::endl;
+}
+}

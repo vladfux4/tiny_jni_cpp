@@ -21,17 +21,27 @@
  * SOFTWARE.
  */
 
-#pragma once
+import java.lang.System;
+import java.util.ArrayList;
 
-#include "tiny_jni_cpp/attach_thread_guard.h"
-#include "tiny_jni_cpp/container_helpers.h"
-#include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/field.h"
-#include "tiny_jni_cpp/field_context.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+class TestAsyncJNI {
+    TestAsyncJNI(String nativeLibPath) {
+        System.load(nativeLibPath);
+    }
+
+    native void runTest();
+
+    String stringMethod(String value) {
+        System.out.println("JAVA: stringMethod: " + value);
+        return "Hello from JAVA";
+    }
+}
+
+public class TestAsync {
+    public static void main(String[] args) {
+        TestAsyncJNI obj = new TestAsyncJNI(args[0]);
+        obj.runTest();
+
+        System.out.println("JAVA: Done");
+    }
+}

@@ -23,15 +23,45 @@
 
 #pragma once
 
-#include "tiny_jni_cpp/attach_thread_guard.h"
-#include "tiny_jni_cpp/container_helpers.h"
-#include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/field.h"
-#include "tiny_jni_cpp/field_context.h"
-#include "tiny_jni_cpp/fundamental_types.h"
-#include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+#include <jni.h>
+
+#include "tiny_jni_cpp/global_vm.h"
+
+namespace tiny_jni_cpp {
+
+struct CurrentThread {
+  static JNIEnv* Attach() {
+    JNIEnv* env = nullptr;
+    JavaVM* vm = GlobalVM::Get();
+
+    jint status =
+        vm->GetEnv(reinterpret_cast<void**>(&env), GlobalVM::kJniVersion);
+
+    if ((status != JNI_OK) && (status != JNI_EDETACHED)) {
+      throw std::runtime_error("vm->GetEnv failed. ErrorCode: " +
+                               std::to_string(status));
+    }
+
+    if (status == JNI_EDETACHED) {
+      status = vm->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr);
+      if (status != JNI_OK) {
+        throw std::runtime_error("AttachCurrentThread failed. ErrorCode: " +
+                                 std::to_string(status));
+      }
+    }
+
+    return env;
+  }
+
+  static void Detach() {
+    JavaVM* vm = GlobalVM::Get();
+    jint status = vm->DetachCurrentThread();
+
+    if (status != JNI_OK) {
+      throw std::runtime_error("DetachCurrentThread failed. ErrorCode: " +
+                               std::to_string(status));
+    }
+  }
+};
+
+}  // namespace tiny_jni_cpp

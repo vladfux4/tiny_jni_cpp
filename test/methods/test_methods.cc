@@ -24,6 +24,7 @@
 #include <jni.h>
 
 #include <iostream>
+#include <thread>
 
 #include "tiny_jni_cpp/tiny_jni_cpp.h"
 
@@ -54,9 +55,6 @@ struct TypeDescriptor<Delegate, example::ExampleStruct>
 
 extern "C" {
 
-using tiny_jni_cpp::Method;
-using tiny_jni_cpp::MethodContext;
-
 /*
  * Class:     TestMethodsJNI
  * Method:    runMethodCalls
@@ -64,6 +62,9 @@ using tiny_jni_cpp::MethodContext;
  */
 JNIEXPORT void JNICALL Java_TestMethodsJNI_runMethodCalls(JNIEnv* env,
                                                           jobject self) {
+  using tiny_jni_cpp::Method;
+  using tiny_jni_cpp::MethodContext;
+
   Method<void>::call(env, self, "intMethod", int(1));
   Method<void>::call(env, self, "intLongMethod", int(1), long(2));
   Method<void>::call(env, self, "intListMethod",

@@ -54,15 +54,15 @@ struct TypeDescriptor<Delegate, example::ExampleStruct>
 
 extern "C" {
 
-using tiny_jni_cpp::Field;
-using tiny_jni_cpp::FieldContext;
-
 /*
  * Class:     TestFieldsJNI
  * Method:    runTest
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_TestFieldsJNI_runTest(JNIEnv* env, jobject self) {
+  using tiny_jni_cpp::Field;
+  using tiny_jni_cpp::FieldContext;
+
   Field<int>::Set(env, self, "intField", 100);
   std::cout << "intField value: " << Field<int>::Get(env, self, "intField")
             << std::endl;
