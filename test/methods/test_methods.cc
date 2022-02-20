@@ -55,6 +55,7 @@ struct TypeDescriptor<Delegate, example::ExampleStruct>
 extern "C" {
 
 using tiny_jni_cpp::Method;
+using tiny_jni_cpp::MethodContext;
 
 /*
  * Class:     TestMethodsJNI
@@ -75,8 +76,16 @@ JNIEXPORT void JNICALL Java_TestMethodsJNI_runMethodCalls(JNIEnv* env,
     std::cout << "intList item: " << item << std::endl;
   }
 
-  auto string = Method<std::string>::call(env, self, "stringMethod",
-                                          std::string("Hello from C++"));
-  std::cout << "Result: " << string << std::endl;
+  auto string_value_0 = Method<std::string>::call<std::string>(
+      env, self, "stringMethod", "Hello from C++");
+  std::cout << "Result: " << string_value_0 << std::endl;
+
+  MethodContext<std::string> stringMethod(env, self, "stringMethod");
+  std::cout << "Result: "
+            << stringMethod(std::string("Second message from C++"))
+            << std::endl;
+
+  MethodContext<void> intMethod(env, self, "intMethod");
+  intMethod(int(8));
 }
 }

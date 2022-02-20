@@ -23,12 +23,46 @@
 
 #pragma once
 
-#include "tiny_jni_cpp/container_helpers.h"
-#include "tiny_jni_cpp/converter.h"
-#include "tiny_jni_cpp/fundamental_types.h"
+#include <jni.h>
+
+#include <string>
+
 #include "tiny_jni_cpp/method.h"
-#include "tiny_jni_cpp/method_context.h"
-#include "tiny_jni_cpp/object_traits/caller.h"
-#include "tiny_jni_cpp/object_traits/getter.h"
-#include "tiny_jni_cpp/object_traits/setter.h"
-#include "tiny_jni_cpp/type_descriptor_base.h"
+
+namespace tiny_jni_cpp {
+
+template <typename ReturnType>
+struct MethodContextBase {
+  MethodContextBase() = delete;
+
+  MethodContextBase(JNIEnv* env, jobject self, const std::string& name)
+      : env_(env), self_(self), name_(name) {}
+
+ protected:
+  JNIEnv* env_;
+  jobject self_;
+  std::string name_;
+};
+
+template <typename ReturnType>
+struct MethodContext : MethodContextBase<ReturnType> {
+  using MethodContextBase<ReturnType>::MethodContextBase;
+
+  template <typename... Args>
+  auto operator()(Args... args) {
+    return Method<ReturnType>::call(this->env_, this->self_,
+                                    this->name_.c_str(), args...);
+  }
+};
+
+template <>
+struct MethodContext<void> : MethodContextBase<void> {
+  using MethodContextBase<void>::MethodContextBase;
+
+  template <typename... Args>
+  void operator()(Args... args) {
+    Method<void>::call(this->env_, this->self_, this->name_.c_str(), args...);
+  }
+};
+
+}  // namespace tiny_jni_cpp

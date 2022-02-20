@@ -25,7 +25,6 @@
 
 #include <jni.h>
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -124,13 +123,8 @@ struct Caller<void> {
   static void call(JNIEnv* env, jobject obj, const char* name, Args... args) {
     std::string signature = internal::MethodSignature<void>::Make(args...);
 
-    std::cout << "NAME: " << name << std::endl;
-    std::cout << "SIGNATURE: " << signature << std::endl;
-
     jclass jni_class = env->GetObjectClass(obj);
     jmethodID method_id = env->GetMethodID(jni_class, name, signature.c_str());
-
-    std::cout << "METHOD_ID: " << method_id << std::endl;
 
     env->CallVoidMethod(obj, method_id, Builder<Args>::Build(env, args)...);
   }
@@ -161,21 +155,6 @@ struct Caller<long> {
                                Builder<Args>::Build(env, args)...);
   }
 };
-
-// template <typename Type>
-// struct Caller<std::vector<Type>> {
-//   template <typename... Args>
-//   static jobject call(JNIEnv* env, jobject obj, const char* name,
-//                       Args... args) {
-//     std::string signature =
-//         internal::MethodSignature<std::vector<Type>>::Make(args...);
-
-//    jclass jni_class = env->GetObjectClass(obj);
-//    jmethodID method_id = env->GetMethodID(jni_class, name,
-//    signature.c_str()); return env->CallObjectMethod(obj, method_id,
-//                                 Builder<Args>::Build(env, args)...);
-//  }
-//};
 
 }  // namespace object_traits
 }  // namespace tiny_jni_cpp
