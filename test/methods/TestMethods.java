@@ -78,6 +78,11 @@ class TestMethodsJNI {
         System.out.println("JAVA: stringMethod: " + value);
         return "Hello from JAVA";
     }
+
+    boolean booleanMethod(boolean value) {
+        System.out.println("JAVA: booleanMethod: " + value);
+        return true;
+    }
 }
 
 public class TestMethods {

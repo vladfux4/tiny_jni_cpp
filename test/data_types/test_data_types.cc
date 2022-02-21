@@ -258,29 +258,26 @@ Java_TestDataTypesJNI_getOtherStruct(JNIEnv* env, jobject /*self*/) {
   return Builder<example::OtherStruct>::Build(env, otherStruct);
 }
 
-using tiny_jni_cpp::Method;
+/*
+ * Class:     TestDataTypesJNI
+ * Method:    testBoolean
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_TestDataTypesJNI_testBoolean(JNIEnv* env,
+                                                         jobject /*self*/,
+                                                         jboolean value) {
+  std::cout << "Java_TestDataTypesJNI_testBoolean "
+            << Converter<bool>::Convert(env, value) << std::endl;
+}
 
 /*
  * Class:     TestDataTypesJNI
- * Method:    runMethodCalls
- * Signature: ()V
+ * Method:    getBoolean
+ * Signature: ()Z
  */
-JNIEXPORT void JNICALL Java_TestDataTypesJNI_runMethodCalls(JNIEnv* env,
-                                                            jobject self) {
-  Method<void>::call(env, self, "intMethod", int(1));
-  Method<void>::call(env, self, "intLongMethod", int(1), long(2));
-  Method<void>::call(env, self, "intListMethod",
-                     std::vector<int>({1, 2, 3, 4, 5}));
-
-  auto int_list = Method<std::vector<int>>::call(
-      env, self, "structListIntListMethod",
-      std::vector<example::ExampleStruct>({{1, 2}, {3, 4}}));
-  for (const auto& item : int_list) {
-    std::cout << "intList item: " << item << std::endl;
-  }
-
-  auto string = Method<std::string>::call(env, self, "stringMethod",
-                                          std::string("Hello from C++"));
-  std::cout << "Result: " << string << std::endl;
+JNIEXPORT jboolean JNICALL Java_TestDataTypesJNI_getBoolean(JNIEnv* env,
+                                                            jobject /*self*/) {
+  std::cout << "Java_TestDataTypesJNI_getBoolean" << std::endl;
+  return Builder<bool>::Build(env, true);
 }
 }

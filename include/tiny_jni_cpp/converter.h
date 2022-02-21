@@ -61,7 +61,7 @@ struct Converter {
 };
 
 template <>
-struct Converter<int> {  /// TODO Add other specializations
+struct Converter<int> {
   using Type = int;
   static Type Convert(JNIEnv* /*env*/, Type obj) { return obj; }
 };
@@ -70,6 +70,12 @@ template <>
 struct Converter<long> {  /// TODO Add other specializations
   using Type = long;
   static Type Convert(JNIEnv* /*env*/, Type obj) { return obj; }
+};
+
+template <>
+struct Converter<bool> {
+  using Type = bool;
+  static Type Convert(JNIEnv* /*env*/, jboolean obj) { return obj; }
 };
 
 template <typename Type>

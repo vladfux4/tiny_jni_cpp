@@ -62,6 +62,11 @@ struct Parameter<long> {
 };
 
 template <>
+struct Parameter<bool> {
+  static constexpr const char* java_type_id = "Z";
+};
+
+template <>
 struct Parameter<std::string> {
   static constexpr const char* java_type_id = "Ljava/lang/String;";
 };
@@ -69,16 +74,6 @@ struct Parameter<std::string> {
 template <typename Type>
 struct Parameter<std::vector<Type>> {
   static constexpr const char* java_type_id = "Ljava/util/ArrayList;";
-};
-
-template <typename Type>
-struct ReturnType {
-  using type = jobject;
-};
-
-template <>
-struct ReturnType<std::string> {
-  using type = jstring;
 };
 
 template <typename ReturnType>
@@ -98,11 +93,21 @@ struct MethodSignature {
   }
 };
 
+template <typename>
+struct ReturnTypeTrait {
+  using type = jobject;
+};
+
+template <>
+struct ReturnTypeTrait<std::string> {
+  using type = jstring;
+};
+
 }  // namespace internal
 
 template <typename Type>
 struct Caller {
-  using ReturnType = typename internal::ReturnType<Type>::type;
+  using ReturnType = typename internal::ReturnTypeTrait<Type>::type;
 
   template <typename... Args>
   static ReturnType call(JNIEnv* env, jobject obj, const char* name,
@@ -153,6 +158,19 @@ struct Caller<long> {
     jmethodID method_id = env->GetMethodID(jni_class, name, signature.c_str());
     return env->CallLongMethod(obj, method_id,
                                Builder<Args>::Build(env, args)...);
+  }
+};
+
+template <>
+struct Caller<bool> {
+  template <typename... Args>
+  static long call(JNIEnv* env, jobject obj, const char* name, Args... args) {
+    std::string signature = internal::MethodSignature<bool>::Make(args...);
+
+    jclass jni_class = env->GetObjectClass(obj);
+    jmethodID method_id = env->GetMethodID(jni_class, name, signature.c_str());
+    return env->CallBooleanMethod(obj, method_id,
+                                  Builder<Args>::Build(env, args)...);
   }
 };
 

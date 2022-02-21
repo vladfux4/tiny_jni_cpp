@@ -89,6 +89,11 @@ struct Builder<long> {
 };
 
 template <>
+struct Builder<bool> {
+  static jboolean Build(JNIEnv* /*env*/, bool obj) { return obj; }
+};
+
+template <>
 struct Builder<std::string> {
   static jstring Build(JNIEnv* env, const std::string& obj) {
     return container_helpers::string::Build(env, obj);

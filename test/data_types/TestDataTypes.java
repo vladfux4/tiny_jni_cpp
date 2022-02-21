@@ -56,6 +56,7 @@ class TestDataTypesJNI {
     native void testStruct(ExampleStruct value);
     native void testIntList(ArrayList<Integer> value);
     native void testOtherStruct(OtherStruct value);
+    native void testBoolean(boolean value);
 
     native int getInt();
     native long getLong();
@@ -63,41 +64,7 @@ class TestDataTypesJNI {
     native ExampleStruct getStruct();
     native ArrayList<Integer> getIntList();
     native OtherStruct getOtherStruct();
-
-    native void runMethodCalls();
-
-    void intMethod(int value) {
-        System.out.println("JAVA: intMethod: " + value);
-    }
-
-    void intLongMethod(int v0, long v1) {
-        System.out.println("JAVA: intLongMethod: " + v0 + " " + v1);
-    }
-
-    void intListMethod(ArrayList<Integer> intList) {
-        System.out.println("JAVA: intListMethod: " + intList.size());
-        for (Integer num : intList) {
-          System.out.println("Item: " + num);
-        }
-    }
-
-    ArrayList<Integer> structListIntListMethod(ArrayList<ExampleStruct> structList) {
-        System.out.println("JAVA: structListIntListMethod: " + structList.size());
-        for (ExampleStruct item : structList) {
-          System.out.println("Item: " + item.intValue + " " + item.longValue);
-        }
-
-        ArrayList<Integer> intList = new ArrayList<Integer>();
-        intList.add(3);
-        intList.add(4);
-
-        return intList;
-    }
-
-    String stringMethod(String value) {
-        System.out.println("JAVA: stringMethod: " + value);
-        return "Hello from JAVA";
-    }
+    native boolean getBoolean();
 }
 
 public class TestDataTypes {
@@ -152,7 +119,8 @@ public class TestDataTypes {
           System.out.println("Item: " + item.intValue + " " + item.longValue);
         }
 
-        obj.runMethodCalls();
+        obj.testBoolean(true);
+        System.out.println("getBoolean: " + obj.getBoolean());
 
         System.out.println("Done");
     }

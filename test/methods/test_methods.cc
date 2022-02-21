@@ -88,5 +88,8 @@ JNIEXPORT void JNICALL Java_TestMethodsJNI_runMethodCalls(JNIEnv* env,
 
   MethodContext<void> intMethod(env, self, "intMethod");
   intMethod(int(8));
+
+  MethodContext<bool> booleanMethod(env, self, "booleanMethod");
+  std::cout << "C++: booleanMethod " << booleanMethod(true) << std::endl;
 }
 }
