@@ -31,6 +31,20 @@
 
 namespace tiny_jni_cpp {
 
+template <typename ContextType>
+struct MethodContextBuilder {
+  MethodContextBuilder() = delete;
+
+  MethodContextBuilder(jobject self, const std::string& name)
+      : self_(self), name_(name) {}
+
+  ContextType Build(JNIEnv* env) { return ContextType(env, self_, name_); }
+
+ protected:
+  jobject self_;
+  std::string name_;
+};
+
 template <typename ReturnType>
 struct MethodContextBase {
   MethodContextBase() = delete;
@@ -46,6 +60,8 @@ struct MethodContextBase {
 
 template <typename ReturnType>
 struct MethodContext : MethodContextBase<ReturnType> {
+  using Builder = MethodContextBuilder<MethodContext<ReturnType>>;
+
   using MethodContextBase<ReturnType>::MethodContextBase;
 
   template <typename... Args>
@@ -57,6 +73,8 @@ struct MethodContext : MethodContextBase<ReturnType> {
 
 template <>
 struct MethodContext<void> : MethodContextBase<void> {
+  using Builder = MethodContextBuilder<MethodContext<void>>;
+
   using MethodContextBase<void>::MethodContextBase;
 
   template <typename... Args>

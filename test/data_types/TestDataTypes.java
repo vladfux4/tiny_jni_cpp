@@ -57,6 +57,7 @@ class TestDataTypesJNI {
     native void testIntList(ArrayList<Integer> value);
     native void testOtherStruct(OtherStruct value);
     native void testBoolean(boolean value);
+    native void testStringList(ArrayList<String> value);
 
     native int getInt();
     native long getLong();
@@ -65,6 +66,7 @@ class TestDataTypesJNI {
     native ArrayList<Integer> getIntList();
     native OtherStruct getOtherStruct();
     native boolean getBoolean();
+    native ArrayList<String> getStringList();
 }
 
 public class TestDataTypes {
@@ -121,6 +123,18 @@ public class TestDataTypes {
 
         obj.testBoolean(true);
         System.out.println("getBoolean: " + obj.getBoolean());
+
+        ArrayList<String> stringList = new ArrayList<String>();
+        stringList.add("Hello");
+        stringList.add("from");
+        stringList.add("Java");
+        obj.testStringList(stringList);
+
+        ArrayList<String> stringListValue = obj.getStringList();
+        System.out.println("getStringList: " + stringListValue.size());
+        for (String item : stringListValue) {
+          System.out.println("Item: " + item);
+        }
 
         System.out.println("Done");
     }

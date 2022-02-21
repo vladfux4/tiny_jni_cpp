@@ -280,4 +280,32 @@ JNIEXPORT jboolean JNICALL Java_TestDataTypesJNI_getBoolean(JNIEnv* env,
   std::cout << "Java_TestDataTypesJNI_getBoolean" << std::endl;
   return Builder<bool>::Build(env, true);
 }
+
+/*
+ * Class:     TestDataTypesJNI
+ * Method:    testStringList
+ * Signature: (Ljava/util/ArrayList;)V
+ */
+JNIEXPORT void JNICALL Java_TestDataTypesJNI_testStringList(JNIEnv* env,
+                                                            jobject self,
+                                                            jobject obj) {
+  std::cout << "Java_TestDataTypesJNI_testStringList " << std::endl;
+  auto value = Converter<std::vector<std::string>>::Convert(env, obj);
+  for (const auto& item : value) {
+    std::cout << "stringList item: " << item << std::endl;
+  }
+}
+
+/*
+ * Class:     TestDataTypesJNI
+ * Method:    getStringList
+ * Signature: ()Ljava/util/ArrayList;
+ */
+JNIEXPORT jobject JNICALL
+Java_TestDataTypesJNI_getStringList(JNIEnv* env, jobject /*self*/) {
+  std::cout << "Java_TestDataTypesJNI_getStringList" << std::endl;
+
+  std::vector<std::string> value = {"Hello", "from", "C++"};
+  return Builder<std::vector<std::string>>::Build(env, value);
+}
 }

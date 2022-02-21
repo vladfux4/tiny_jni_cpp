@@ -101,6 +101,10 @@ struct Converter<std::string> {
   static std::string Convert(JNIEnv* env, jstring obj) {
     return container_helpers::string::Get(env, obj);
   }
+
+  static std::string Convert(JNIEnv* env, jobject obj) {
+    return Convert(env, static_cast<jstring>(obj));
+  }
 };
 
 }  // namespace tiny_jni_cpp
