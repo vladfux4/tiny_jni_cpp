@@ -31,20 +31,20 @@ namespace tiny_jni_cpp {
 namespace container_helpers {
 namespace list {
 
-jobject BuildArrayList(JNIEnv* env) {
+inline jobject BuildArrayList(JNIEnv* env) {
   jclass jni_class = env->FindClass("Ljava/util/ArrayList;");
   jmethodID method_id = env->GetMethodID(jni_class, "<init>", "()V");
   return env->NewObject(jni_class, method_id);
 }
 
-bool Add(JNIEnv* env, jobject list, jobject item) {
+inline bool Add(JNIEnv* env, jobject list, jobject item) {
   jclass jni_class = env->GetObjectClass(list);
   jmethodID method_id =
       env->GetMethodID(jni_class, "add", "(Ljava/lang/Object;)Z");
   return env->CallBooleanMethod(list, method_id, item);
 }
 
-jobjectArray ToArray(JNIEnv* env, jobject list) {
+inline jobjectArray ToArray(JNIEnv* env, jobject list) {
   jclass jni_class = env->GetObjectClass(list);
   jmethodID method_id =
       env->GetMethodID(jni_class, "toArray", "()[Ljava/lang/Object;");
@@ -55,11 +55,11 @@ jobjectArray ToArray(JNIEnv* env, jobject list) {
 
 namespace array {
 
-std::size_t Length(JNIEnv* env, jobjectArray array) {
+inline std::size_t Length(JNIEnv* env, jobjectArray array) {
   return env->GetArrayLength(array);
 }
 
-jobject Get(JNIEnv* env, jobjectArray array, std::size_t index) {
+inline jobject Get(JNIEnv* env, jobjectArray array, std::size_t index) {
   return env->GetObjectArrayElement(array, index);
 }
 
@@ -67,14 +67,14 @@ jobject Get(JNIEnv* env, jobjectArray array, std::size_t index) {
 
 namespace string {
 
-std::string Get(JNIEnv* env, jstring obj) {
+inline std::string Get(JNIEnv* env, jstring obj) {
   const char* cstr = env->GetStringUTFChars(obj, nullptr);
   auto result = std::string(cstr);
   env->ReleaseStringUTFChars(obj, cstr);
   return result;
 }
 
-jstring Build(JNIEnv* env, const std::string& value) {
+inline jstring Build(JNIEnv* env, const std::string& value) {
   return env->NewStringUTF(value.c_str());
 }
 
