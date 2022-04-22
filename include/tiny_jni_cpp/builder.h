@@ -100,6 +100,13 @@ struct Builder<std::string> {
   }
 };
 
+template <>
+struct Builder<ByteBuffer> {
+  static jobject Build(JNIEnv* env, const ByteBuffer& obj) {
+    return container_helpers::byte_buffer::Build(env, obj);
+  }
+};
+
 template <typename Type>
 struct Builder<std::vector<Type>> {
   template <typename ValueType>

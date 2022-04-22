@@ -22,6 +22,7 @@
  */
 
 #include <jni.h>
+#include <string.h>
 
 #include <iostream>
 
@@ -298,6 +299,24 @@ JNIEXPORT void JNICALL Java_TestDataTypesJNI_testStringList(JNIEnv* env,
 
 /*
  * Class:     TestDataTypesJNI
+ * Method:    testByteBuffer
+ */
+JNIEXPORT void JNICALL Java_TestDataTypesJNI_testByteBuffer(JNIEnv* env,
+                                                            jobject self,
+                                                            jobject obj) {
+  std::cout << "Java_TestDataTypesJNI_testByteBuffer " << std::endl;
+
+  auto result = Converter<tiny_jni_cpp::ByteBuffer>::Convert(env, obj);
+  std::cout << "Result: " << result.data << " " << result.size << std::endl;
+
+  for (int i = 0; i < result.size; i++) {
+    std::cout << static_cast<int>(result.data[i]) << " ";
+  }
+  std::cout << std::endl;
+}
+
+/*
+ * Class:     TestDataTypesJNI
  * Method:    getStringList
  * Signature: ()Ljava/util/ArrayList;
  */
@@ -307,5 +326,22 @@ Java_TestDataTypesJNI_getStringList(JNIEnv* env, jobject /*self*/) {
 
   std::vector<std::string> value = {"Hello", "from", "C++"};
   return Builder<std::vector<std::string>>::Build(env, value);
+}
+
+/*
+ * Class:     TestDataTypesJNI
+ * Method:    getByteBuffer
+ */
+JNIEXPORT jobject JNICALL
+Java_TestDataTypesJNI_getByteBuffer(JNIEnv* env, jobject /*self*/) {
+  std::cout << "Java_TestDataTypesJNI_getStringList" << std::endl;
+
+  char* data = new char[8];
+  strcpy(data, "AABBCCD");
+
+  tiny_jni_cpp::ByteBuffer value = {reinterpret_cast<uint8_t*>(data), 8};
+
+  // free buffer from Java
+  return Builder<tiny_jni_cpp::ByteBuffer>::Build(env, value);
 }
 }

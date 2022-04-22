@@ -23,6 +23,7 @@
 
 import java.lang.System;
 import java.util.ArrayList;
+import java.nio.ByteBuffer;
 
 class ExampleStruct {
   ExampleStruct() {
@@ -58,6 +59,7 @@ class TestDataTypesJNI {
     native void testOtherStruct(OtherStruct value);
     native void testBoolean(boolean value);
     native void testStringList(ArrayList<String> value);
+    native void testByteBuffer(ByteBuffer pkt);
 
     native int getInt();
     native long getLong();
@@ -67,6 +69,7 @@ class TestDataTypesJNI {
     native OtherStruct getOtherStruct();
     native boolean getBoolean();
     native ArrayList<String> getStringList();
+    native ByteBuffer getByteBuffer();
 }
 
 public class TestDataTypes {
@@ -95,6 +98,13 @@ public class TestDataTypes {
         otherStruct.list.add(new ExampleStruct(1, 2));
         otherStruct.list.add(new ExampleStruct(3, 4));
         obj.testOtherStruct(otherStruct);
+
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4);
+        buffer.put((byte)0xAA);
+        buffer.put((byte)0xBB);
+        buffer.put((byte)0xCC);
+        buffer.put((byte)0xDD);
+        obj.testByteBuffer(buffer);
 
         int intValue = obj.getInt();
         System.out.println("getInt: " + intValue);
@@ -135,6 +145,18 @@ public class TestDataTypes {
         for (String item : stringListValue) {
           System.out.println("Item: " + item);
         }
+
+        ByteBuffer byteBuffer = obj.getByteBuffer();
+        try{
+          byte[] arr = new byte[byteBuffer.remaining()];
+          byteBuffer.get(arr);
+          String byteBufferStr = new String(arr, "ASCII");
+          System.out.println("getByteBuffer: " + byteBufferStr);
+        } catch (Exception exception){
+          System.out.println(exception);
+          exception.printStackTrace();
+        }
+
 
         System.out.println("Done");
     }

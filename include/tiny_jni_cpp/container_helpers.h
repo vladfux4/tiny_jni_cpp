@@ -27,6 +27,8 @@
 
 #include <string>
 
+#include "tiny_jni_cpp/byte_buffer.h"
+
 namespace tiny_jni_cpp {
 namespace container_helpers {
 namespace list {
@@ -79,5 +81,20 @@ inline jstring Build(JNIEnv* env, const std::string& value) {
 }
 
 }  // namespace string
+
+namespace byte_buffer {
+
+inline ByteBuffer Get(JNIEnv* env, jobject obj) {
+  void* data = env->GetDirectBufferAddress(obj);
+  const size_t size = env->GetDirectBufferCapacity(obj);
+  return {reinterpret_cast<uint8_t*>(data), size};
+}
+
+inline jobject Build(JNIEnv* env, const ByteBuffer& value) {
+  return env->NewDirectByteBuffer(value.data, value.size);
+}
+
+}  // namespace byte_buffer
+
 }  // namespace container_helpers
 }  // namespace tiny_jni_cpp

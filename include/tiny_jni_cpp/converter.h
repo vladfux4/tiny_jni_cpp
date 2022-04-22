@@ -26,6 +26,7 @@
 #include <jni.h>
 
 #include "container_helpers.h"
+#include "tiny_jni_cpp/byte_buffer.h"
 #include "tiny_jni_cpp/object_traits/caller.h"
 #include "tiny_jni_cpp/object_traits/getter.h"
 
@@ -104,6 +105,13 @@ struct Converter<std::string> {
 
   static std::string Convert(JNIEnv* env, jobject obj) {
     return Convert(env, static_cast<jstring>(obj));
+  }
+};
+
+template <>
+struct Converter<ByteBuffer> {
+  static ByteBuffer Convert(JNIEnv* env, jobject obj) {
+    return container_helpers::byte_buffer::Get(env, obj);
   }
 };
 
