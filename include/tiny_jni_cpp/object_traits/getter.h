@@ -28,6 +28,8 @@
 #include <string>
 #include <vector>
 
+#include "tiny_jni_cpp/byte_buffer.h"
+
 template <typename Delegate, typename Type>
 struct TypeDescriptor;
 
@@ -53,6 +55,17 @@ struct Getter<std::string> {
     jfieldID field_id = env->GetFieldID(jni_class, name, "Ljava/lang/String;");
     jobject string_obj = env->GetObjectField(obj, field_id);
     return static_cast<jstring>(string_obj);
+  }
+};
+
+template <>
+struct Getter<ByteBuffer> {
+  static jobject Get(JNIEnv* env, jobject obj, const char* name) {
+    jclass jni_class = env->GetObjectClass(obj);
+    jfieldID field_id =
+        env->GetFieldID(jni_class, name, "Ljava/nio/ByteBuffer;");
+    jobject object = env->GetObjectField(obj, field_id);
+    return object;
   }
 };
 

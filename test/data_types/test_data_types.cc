@@ -76,6 +76,22 @@ struct TypeDescriptor<Delegate, example::OtherStruct>
 using tiny_jni_cpp::Builder;
 using tiny_jni_cpp::Converter;
 
+struct Image {
+  tiny_jni_cpp::ByteBuffer data;
+};
+
+template <typename Delegate>
+struct TypeDescriptor<Delegate, Image>
+    : public tiny_jni_cpp::TypeDescriptorBase<Delegate, Image> {
+  using Base = tiny_jni_cpp::TypeDescriptorBase<Delegate, Image>;
+  using Type = Image;
+  using Base::Base;
+
+  static constexpr const char* java_type_id = "LExampleStruct;";
+
+  void Apply(Type* out) { Base::GetField(&out->data, "data"); }
+};
+
 extern "C" {
 
 /*
@@ -306,11 +322,12 @@ JNIEXPORT void JNICALL Java_TestDataTypesJNI_testByteBuffer(JNIEnv* env,
                                                             jobject obj) {
   std::cout << "Java_TestDataTypesJNI_testByteBuffer " << std::endl;
 
-  auto result = Converter<tiny_jni_cpp::ByteBuffer>::Convert(env, obj);
-  std::cout << "Result: " << result.data << " " << result.size << std::endl;
+  auto result = Converter<Image>::Convert(env, obj);
+  std::cout << "Result: " << result.data.data << " " << result.data.size
+            << std::endl;
 
-  for (int i = 0; i < result.size; i++) {
-    std::cout << static_cast<int>(result.data[i]) << " ";
+  for (int i = 0; i < result.data.size; i++) {
+    std::cout << static_cast<int>(result.data.data[i]) << " ";
   }
   std::cout << std::endl;
 }

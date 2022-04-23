@@ -45,6 +45,11 @@ class OtherStruct {
   public ArrayList<ExampleStruct> list;
 }
 
+class Image {
+  public ByteBuffer data;
+}
+
+
 
 class TestDataTypesJNI {
     TestDataTypesJNI(String nativeLibPath) {
@@ -59,7 +64,7 @@ class TestDataTypesJNI {
     native void testOtherStruct(OtherStruct value);
     native void testBoolean(boolean value);
     native void testStringList(ArrayList<String> value);
-    native void testByteBuffer(ByteBuffer pkt);
+    native void testByteBuffer(Image image);
 
     native int getInt();
     native long getLong();
@@ -104,7 +109,11 @@ public class TestDataTypes {
         buffer.put((byte)0xBB);
         buffer.put((byte)0xCC);
         buffer.put((byte)0xDD);
-        obj.testByteBuffer(buffer);
+
+        Image image = new Image();
+        image.data = buffer;
+
+        obj.testByteBuffer(image);
 
         int intValue = obj.getInt();
         System.out.println("getInt: " + intValue);

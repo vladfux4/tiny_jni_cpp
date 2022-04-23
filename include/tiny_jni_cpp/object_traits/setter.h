@@ -55,6 +55,15 @@ struct Setter<std::string> {
   }
 };
 
+template <>
+struct Setter<ByteBuffer> {
+  static void Set(JNIEnv* env, jobject obj, const char* name, jobject value) {
+    jclass jni_class = env->GetObjectClass(obj);
+    jfieldID field_id = env->GetFieldID(jni_class, name, "Ljava/nio/ByteBuffer;");
+    env->SetObjectField(obj, field_id, value);
+  }
+};
+
 template <>  /// TODO Add other specializations
 struct Setter<int> {
   static void Set(JNIEnv* env, jobject obj, const char* name, jint value) {
